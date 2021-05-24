@@ -22,6 +22,10 @@ class WebmanApp extends App
             static::tryToGracefulExit();
         }
 
+        $tick = null;
+        $tickRetOk = false;
+        $tickRetNo = 404;
+
         try {
             static::$_request = $request;
             static::$_connection = $connection;
@@ -29,8 +33,6 @@ class WebmanApp extends App
             $key = $request->method() . $path;
 
             // swoole tracker 被调用开始前执行
-            $tickRetOk = false;
-            $tickRetNo = 404;
             $tick = \SwooleTracker\Stats::beforeExecRpc($path, env("belong_system", ''), $request->getLocalIp());
 
             if (isset(static::$_callbacks[$key])) {
