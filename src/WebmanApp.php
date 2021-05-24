@@ -3,7 +3,6 @@
 namespace teamones\tracker;
 
 
-class App
-{
+class WebmanApp{
 
 }
