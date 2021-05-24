@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "teamones\\tracker": "src/"
+            "teamones\\tracker\\": "src/"
         }
     }
 }
