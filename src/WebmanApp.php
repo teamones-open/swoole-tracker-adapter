@@ -93,20 +93,9 @@ class WebmanApp extends App
 
         // swoole tracker 被调用结束后执行
         REQUEST_END:
-        $this->afterExecRpc($tick, $tickRetOk, $tickRetNo);
+        \SwooleTracker\Stats::afterExecRpc($tick, $tickRetOk, $tickRetNo);
 
 
         return null;
-    }
-
-    /**
-     * swoole tracker 被调用结束后执行
-     * @param $tick
-     * @param $tickRetOk
-     * @param $tickRetNo
-     */
-    public function afterExecRpc($tick, $tickRetOk, $tickRetNo)
-    {
-        \SwooleTracker\Stats::afterExecRpc($tick, $tickRetOk, $tickRetNo);
     }
 }
