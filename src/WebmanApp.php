@@ -2,7 +2,7 @@
 
 namespace teamones\tracker;
 
-use webman\App;
+use Webman\App;
 use Webman\Http\Request;
 use Webman\Route;
 use Workerman\Connection\TcpConnection;
@@ -38,15 +38,21 @@ class WebmanApp extends App
             if (isset(static::$_callbacks[$key])) {
                 list($callback, $request->app, $request->controller, $request->action) = static::$_callbacks[$key];
                 static::send($connection, $callback($request), $request);
-                return null;
+                $tickRetOk = true;
+                $tickRetNo = 200;
+                goto REQUEST_END;
             }
 
             if (static::findRoute($connection, $path, $key, $request)) {
-                return null;
+                $tickRetOk = true;
+                $tickRetNo = 200;
+                goto REQUEST_END;
             }
 
             if (static::findFile($connection, $path, $key, $request)) {
-                return null;
+                $tickRetOk = true;
+                $tickRetNo = 200;
+                goto REQUEST_END;
             }
 
             $controller_and_action = static::parseControllerAction($path);
@@ -62,7 +68,9 @@ class WebmanApp extends App
                 static::$_callbacks[$key] = [$callback, '', '', ''];
                 list($callback, $request->app, $request->controller, $request->action) = static::$_callbacks[$key];
                 static::send($connection, $callback($request), $request);
-                return null;
+                $tickRetOk = false;
+                $tickRetNo = 404;
+                goto REQUEST_END;
             }
             $app = $controller_and_action['app'];
             $controller = $controller_and_action['controller'];
@@ -75,14 +83,30 @@ class WebmanApp extends App
             // swoole tracker 正常返回值
             $tickRetOk = true;
             $tickRetNo = 200;
-
+            goto REQUEST_END;
         } catch (\Throwable $e) {
             static::send($connection, static::exceptionResponse($e, $request), $request);
+            $tickRetOk = false;
+            $tickRetNo = 500;
+            goto REQUEST_END;
         }
 
         // swoole tracker 被调用结束后执行
-        \SwooleTracker\Stats::afterExecRpc($tick, $tickRetOk, $tickRetNo);
+        REQUEST_END:
+        $this->afterExecRpc($tick, $tickRetOk, $tickRetNo);
+
 
         return null;
+    }
+
+    /**
+     * swoole tracker 被调用结束后执行
+     * @param $tick
+     * @param $tickRetOk
+     * @param $tickRetNo
+     */
+    public function afterExecRpc($tick, $tickRetOk, $tickRetNo)
+    {
+        \SwooleTracker\Stats::afterExecRpc($tick, $tickRetOk, $tickRetNo);
     }
 }
