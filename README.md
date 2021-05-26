@@ -1,2 +1,8 @@
-# log
-基于monolog http客户端上报日志组件
+# swoole-tracker-adapter
+适配swoole-tracker信息收集组件
+
+# 安装方式
+
+```
+composer require teamones/swoole-tracker-adapter
+```
