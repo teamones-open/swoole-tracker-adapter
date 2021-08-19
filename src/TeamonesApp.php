@@ -36,7 +36,7 @@ class TeamonesApp extends App
         // swoole tracker 被调用开始前执行
         $tickRetOk = false;
         $tickRetNo = ErrorCode::ERROR_404;
-        if(class_exists("SwooleTracker\Stats")) {
+        if ((bool)config('server.use_swoole_tracker') && class_exists("SwooleTracker\Stats")) {
             $tick = \SwooleTracker\Stats::beforeExecRpc($path, C('belong_system'), $request->getLocalIp());
         }
 
@@ -110,7 +110,7 @@ class TeamonesApp extends App
         static::send($connection, $response->renderWorkermanData(), $request);
 
         // swoole tracker 被调用结束后执行
-        if(class_exists("SwooleTracker\Stats")) {
+        if ((bool)config('server.use_swoole_tracker') && class_exists("SwooleTracker\Stats")) {
             \SwooleTracker\Stats::afterExecRpc($tick, $tickRetOk, $tickRetNo);
         }
 
