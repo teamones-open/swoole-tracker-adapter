@@ -33,7 +33,7 @@ class WebmanApp extends App
             $key = $request->method() . $path;
 
             // swoole tracker 被调用开始前执行
-            if(class_exists("SwooleTracker\Stats")){
+            if ((bool)config('server.use_swoole_tracker') && class_exists("SwooleTracker\Stats")) {
                 $tick = \SwooleTracker\Stats::beforeExecRpc($path, env("belong_system", ''), $request->getLocalIp());
             }
 
@@ -95,7 +95,7 @@ class WebmanApp extends App
 
         // swoole tracker 被调用结束后执行
         REQUEST_END:
-        if(class_exists("SwooleTracker\Stats")) {
+        if ((bool)config('server.use_swoole_tracker') && class_exists("SwooleTracker\Stats")) {
             \SwooleTracker\Stats::afterExecRpc($tick, $tickRetOk, $tickRetNo);
         }
 
