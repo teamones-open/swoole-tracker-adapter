@@ -86,7 +86,7 @@ class TeamonesApp extends App
         } catch (HttpResponseException $exception) {
             $data = $exception->getResponse();
         } catch (\Throwable $e) {
-            $data = Response::create(["code" => $e->getCode(), "msg" => $e->getMessage()], "json");;
+            $data = static::exceptionResponse($e, $request);
         }
 
 
